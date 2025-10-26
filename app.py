@@ -32,7 +32,7 @@ def home():
             }
             a {
                 display: inline-block;
-                margin-top: 30px;
+                margin: 15px;
                 padding: 10px 20px;
                 background: white;
                 color: #5563DE;
@@ -119,10 +119,10 @@ def list_students():
 def add_student():
     if request.method == 'POST':
         name = request.form.get('name')
-        grade = request.form.get('year')
+        year = request.form.get('year')
         section = request.form.get('section')
 
-        if name and grade and section:
+        if name and year and section:
             students.append({"name": name, "year": year, "section": section})
             return redirect('/students')
 
