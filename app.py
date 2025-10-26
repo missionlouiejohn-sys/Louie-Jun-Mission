@@ -1,6 +1,11 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 
 app = Flask(__name__)
+
+# Temporary in-memory storage (resets when app restarts)
+students = [
+    {"name": "Your Name", "grade": 10, "section": "Zechariah"}
+]
 
 @app.route('/')
 def home():
@@ -44,46 +49,134 @@ def home():
     <body>
         <h1>🎓 Welcome to My Flask API!</h1>
         <p>Explore student information and more.</p>
-        <a href="/student">View Student Info</a>
+        <a href="/students">📚 View All Students</a>
+        <a href="/add_student">➕ Add Student</a>
     </body>
     </html>
     """
 
-@app.route('/student')
-def get_student():
-    return """
+@app.route('/students')
+def list_students():
+    student_cards = ""
+    for s in students:
+        student_cards += f"""
+        <div class="card">
+            <p><strong>Name:</strong> {s['name']}</p>
+            <p><strong>Grade:</strong> {s['grade']}</p>
+            <p><strong>Section:</strong> {s['section']}</p>
+        </div>
+        """
+
+    return f"""
     <html>
     <head>
-        <title>Student Info</title>
+        <title>Student List</title>
         <style>
-            body {
+            body {{
                 font-family: 'Segoe UI', Arial, sans-serif;
                 background: linear-gradient(135deg, #FF9A8B, #FF6A88, #FF99AC);
                 color: #333;
+                text-align: center;
+                padding: 50px;
+                margin: 0;
+            }}
+            h2 {{
+                font-size: 2.5em;
+                color: white;
+            }}
+            .card {{
+                background: white;
+                border-radius: 20px;
+                padding: 20px;
+                width: 250px;
+                margin: 20px auto;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+                animation: fadeIn 0.8s ease;
+            }}
+            @keyframes fadeIn {{
+                from {{ opacity: 0; transform: translateY(20px); }}
+                to {{ opacity: 1; transform: translateY(0); }}
+            }}
+            a {{
+                display: inline-block;
+                margin-top: 20px;
+                color: white;
+                text-decoration: underline;
+                font-weight: bold;
+            }}
+        </style>
+    </head>
+    <body>
+        <h2>👩‍🎓 Student List</h2>
+        {student_cards}
+        <a href="/add_student">➕ Add Another Student</a><br>
+        <a href="/">← Back to Home</a>
+    </body>
+    </html>
+    """
+
+@app.route('/add_student', methods=['GET', 'POST'])
+def add_student():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        grade = request.form.get('grade')
+        section = request.form.get('section')
+
+        if name and grade and section:
+            students.append({"name": name, "grade": grade, "section": section})
+            return redirect('/students')
+
+    return """
+    <html>
+    <head>
+        <title>Add Student</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background: linear-gradient(135deg, #43CBFF, #9708CC);
+                color: white;
                 text-align: center;
                 padding: 100px;
                 margin: 0;
             }
             h2 {
                 font-size: 2.5em;
-                color: white;
             }
-            .card {
+            form {
                 background: white;
+                color: #333;
                 border-radius: 20px;
                 padding: 30px;
-                width: 300px;
-                margin: 0 auto;
+                display: inline-block;
+                text-align: left;
                 box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-                animation: fadeIn 0.8s ease;
             }
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(20px); }
-                to { opacity: 1; transform: translateY(0); }
+            label {
+                display: block;
+                margin: 10px 0 5px;
+                font-weight: bold;
             }
-            p {
+            input {
+                width: 100%;
+                padding: 10px;
+                border-radius: 10px;
+                border: 1px solid #ccc;
+                margin-bottom: 15px;
+                font-size: 1em;
+            }
+            button {
+                width: 100%;
+                padding: 10px;
+                border: none;
+                border-radius: 20px;
+                background: linear-gradient(135deg, #9708CC, #43CBFF);
+                color: white;
                 font-size: 1.1em;
-                margin: 10px 0;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+            button:hover {
+                background: linear-gradient(135deg, #43CBFF, #9708CC);
             }
             a {
                 display: inline-block;
@@ -95,12 +188,19 @@ def get_student():
         </style>
     </head>
     <body>
-        <h2>👩‍🎓 Student Information</h2>
-        <div class="card">
-            <p><strong>Name:</strong> Your Name</p>
-            <p><strong>Grade:</strong> 10</p>
-            <p><strong>Section:</strong> Zechariah</p>
-        </div>
+        <h2>➕ Add a New Student</h2>
+        <form method="POST">
+            <label for="name">Name:</label>
+            <input type="text" name="name" required>
+
+            <label for="grade">Grade:</label>
+            <input type="number" name="grade" required>
+
+            <label for="section">Section:</label>
+            <input type="text" name="section" required>
+
+            <button type="submit">Add Student</button>
+        </form>
         <a href="/">← Back to Home</a>
     </body>
     </html>
