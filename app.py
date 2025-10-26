@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 # Temporary in-memory storage (resets when app restarts)
 students = [
-    {"name": "Your Name", "grade": 10, "section": "Zechariah"}
+    {"name": "Your Name", "year": 10, "section": "Zechariah"}
 ]
 
 @app.route('/')
@@ -62,7 +62,7 @@ def list_students():
         student_cards += f"""
         <div class="card">
             <p><strong>Name:</strong> {s['name']}</p>
-            <p><strong>Grade:</strong> {s['grade']}</p>
+            <p><strong>Year:</strong> {s['year']}</p>
             <p><strong>Section:</strong> {s['section']}</p>
         </div>
         """
@@ -119,11 +119,11 @@ def list_students():
 def add_student():
     if request.method == 'POST':
         name = request.form.get('name')
-        grade = request.form.get('grade')
+        grade = request.form.get('year')
         section = request.form.get('section')
 
         if name and grade and section:
-            students.append({"name": name, "grade": grade, "section": section})
+            students.append({"name": name, "year": year, "section": section})
             return redirect('/students')
 
     return """
@@ -193,8 +193,8 @@ def add_student():
             <label for="name">Name:</label>
             <input type="text" name="name" required>
 
-            <label for="grade">Grade:</label>
-            <input type="number" name="grade" required>
+            <label for="year">Year:</label>
+            <input type="number" name="year" required>
 
             <label for="section">Section:</label>
             <input type="text" name="section" required>
